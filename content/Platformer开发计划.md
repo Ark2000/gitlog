@@ -1,6 +1,7 @@
 # Platformer 游戏开发计划
 
-![](assets/screenshot_1677811355850.png)
+![](assets/cover1.png)
+<center> <i> 开发中画面 </i> </center>
 
 计划使用 Godot 开发一个简单的、纯粹的、轻松明快、复古的平台跳跃游戏，至于原因？很简单，因为我没有做过这种类型的游戏，所以我觉得有必要稍微探索一下。
 
