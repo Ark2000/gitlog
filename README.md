@@ -6,5 +6,8 @@
 
 # 最近更新 Recent
 
+![](content/assets/cover1.png)
 - [Platformer 开发计划](content/Platformer开发计划.md)
+
+![](content/assets/cover2.png)
 - [2023.3](content/2023.3.md)
