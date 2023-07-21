@@ -45,8 +45,6 @@ jobs:
 # 提交并推送变更到B仓库    
     - name: Commit and push
       run: |
-        git config user.name k2kra
-        git config user.email ark2000@foxmail.com
         git add .
         git commit -m "Sync archive"
         git push
