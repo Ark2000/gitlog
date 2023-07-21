@@ -1,0 +1,46 @@
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+      
+    - name: Zip folder
+      uses: thedoctor0/zip-release@master
+      with:
+        filename: folder-to-sync.zip
+        path: archive
+
+    - name: Upload to releases  
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.B_TOKEN }}
+        file: folder-to-sync.zip
+        tag: sync
+        overwrite: true
+        repository: Ark2000/testsync
+        
+    - uses: actions/checkout@v2
+      with: 
+        repository: Ark2000/testsync
+        token: ${{ secrets.B_TOKEN }}  
+           
+    - name: Extract and overwrite
+      run: |
+        unzip folder-to-sync.zip
+        rm -rf addons
+        mv folder-to-sync addons
+    
+    - name: Commit and push changes
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add .
+        git commit -m "Sync from repo A"
+        git push
