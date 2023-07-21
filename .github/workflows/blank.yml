@@ -1,46 +1,65 @@
+# 定义workflow名称 
+name: Sync archive folder
+
+# 在A仓库main分支push代码时触发
 on: 
   push:
     branches:
       - main
 
+# 定义任务    
 jobs:
 
-  sync:
+# 任务名称 
+  build: 
+  
+# 在ubuntu环境下运行   
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
-      
-    - name: Zip folder
-      uses: thedoctor0/zip-release@master
-      with:
-        filename: folder-to-sync.zip
-        path: archive
-
-    - name: Upload to releases  
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.B_TOKEN }}
-        file: folder-to-sync.zip
-        tag: sync
-        overwrite: true
-        repository: Ark2000/testsync
-        
-    - uses: actions/checkout@v2
-      with: 
-        repository: Ark2000/testsync
-        token: ${{ secrets.B_TOKEN }}  
-           
-    - name: Extract and overwrite
-      run: |
-        unzip folder-to-sync.zip
-        rm -rf addons
-        mv folder-to-sync addons
     
-    - name: Commit and push changes
+# 检出A仓库代码    
+    - uses: actions/checkout@v2
+
+# 压缩archive文件夹为zip包    
+    - name: Zip archive folder
+      run: |
+        zip -r archive.zip ./archive
+        
+# 发布zip包到B仓库发布页     
+    - name: Release to B repo   
+      uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true 
+        name: Archive sync # 发布名称
+        token: ${{ secrets.TOKEN }} # B仓库token
+        artifacts: archive.zip # zip包路径
+        tag: sync # 发布标签
+        body: Sync from A repo # 发布内容
+        draft: false 
+        prerelease: false
+        repo: Ark2000/testsync # B仓库
+        
+  # 检出B仓库代码    
+    - name: Extract archive 
+      uses: actions/checkout@v2
+      with:
+        repository: Ark2000/testsync
+        token: ${{ secrets.TOKEN }}  
+      
+# 解压zip包并覆盖文件    
+    - run: |
+        rm -rf *
+        unzip archive.zip
+        cp -r archive/* ./
+        rm -rf archive
+
+        
+# 提交并推送变更到B仓库    
+    - name: Commit and push
       run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
         git add .
-        git commit -m "Sync from repo A"
+        git commit -m "Sync archive"
         git push
