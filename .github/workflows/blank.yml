@@ -21,25 +21,22 @@ jobs:
 # 检出A仓库代码    
     - uses: actions/checkout@v2
 
-    - name: Compute archive hash
-      run: |
-        HASH=$(sha1sum archive | awk '{print $1}')
-        echo "HASH=${HASH}" >> $GITHUB_ENV
-
-    - name: Check if archive changed
-      run: |    
-        NEW_HASH=$(sha1sum archive | awk '{print $1}')
-        if [ "$NEW_HASH" = "$HASH" ]; then
-          echo "Archive not changed, skip sync"
-          exit 0
-        fi
-
 # 压缩archive文件夹为zip包    
     - name: Zip archive folder
       run: |
         zip -r ../archive.zip ./archive
-        
-  # 检出B仓库代码    
+
+    - name: Compute archive hash
+      run: |
+        HASH=$(sha1sum ../archive.zip | awk '{print $1}')
+        echo "HASH=${HASH}" >> $GITHUB_ENV
+  
+# 添加hash标识
+    - name: Create commit hash file
+      run: |
+        echo $(git rev-parse HEAD) > ../SHA
+
+# 检出B仓库代码    
     - name: Extract archive 
       uses: actions/checkout@v2
       with:
@@ -51,6 +48,7 @@ jobs:
         rm -rf *
         unzip ../archive.zip
         cp -r archive/* ./
+        cp ../SHA ./
         rm -rf archive
         ls -a
 
