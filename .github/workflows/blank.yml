@@ -37,8 +37,8 @@ jobs:
     - run: |
         rm -rf *
         unzip ../archive.zip
-        cp -r ../archive/* ./
-        rm -rf ../archive
+        cp -r archive/* ./
+        rm -rf archive
 
         
 # 提交并推送变更到B仓库    
