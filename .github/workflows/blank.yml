@@ -29,12 +29,13 @@ jobs:
 # 添加sha标识
     - name: Create commit hash file
       run: |
-        echo $(git rev-parse HEAD) > ../SHA
+        echo $GITHUB_SHA > ../COMMIT_SHA
 
     - name: Get commit info
       run: |
+        SHA=$(git rev-parse --short HEAD)
         MSG=$(git log -1 --pretty=%B)
-        echo "::set-output name=commit::$GITHUB_EVENT_NAME $GITHUB_SHA $MSG"
+        echo "::set-output name=commit::$MSG($GITHUB_SHA)"
       id: commit
 
 # 检出B仓库代码    
@@ -49,7 +50,7 @@ jobs:
         rm -rf *
         unzip ../archive.zip
         cp -r archive/* ./
-        cp ../SHA ./
+        cp ../COMMIT_SHA ./
         rm -rf archive
         ls -a
 
@@ -59,7 +60,7 @@ jobs:
         git config user.name bot-k2kra
         git config user.email ark2000@foxmail.com
         git add .
-        git commit -m "${{ steps.commit.outputs.commit }}"
+        git commit -m "SYNC: ${{ steps.commit.outputs.commit }}"
         git push
         echo "git push output: $?"
   
