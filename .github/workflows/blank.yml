@@ -26,21 +26,7 @@ jobs:
       run: |
         zip -r archive.zip ./archive
         
-# 发布zip包到B仓库发布页     
-    - name: Release to B repo   
-      uses: ncipollo/release-action@v1
-      with:
-        allowUpdates: true 
-        name: Archive sync # 发布名称
-        token: ${{ secrets.TOKEN }} # B仓库token
-        artifacts: archive.zip # zip包路径
-        tag: sync # 发布标签
-        body: Sync from A repo # 发布内容
-        draft: false 
-        prerelease: false
-        repo: Ark2000/testsync # B仓库
-        
-  # 检出B仓库代码    
+# 检出B仓库代码    
     - name: Extract archive 
       uses: actions/checkout@v2
       with:
