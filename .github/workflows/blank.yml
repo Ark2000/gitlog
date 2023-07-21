@@ -35,7 +35,6 @@ jobs:
       
 # 解压zip包并覆盖文件    
     - run: |
-        rm -rf *
         unzip archive.zip
         cp -r archive/* ./
         rm -rf archive
