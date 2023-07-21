@@ -25,16 +25,17 @@ jobs:
     - name: Zip archive folder
       run: |
         zip -r ../archive.zip ./archive
-
-    - name: Compute archive hash
-      run: |
-        HASH=$(sha1sum ../archive.zip | awk '{print $1}')
-        echo "HASH=${HASH}" >> $GITHUB_ENV
   
-# 添加hash标识
+# 添加sha标识
     - name: Create commit hash file
       run: |
         echo $(git rev-parse HEAD) > ../SHA
+
+    - name: Get commit info
+      run: |
+        MSG=$(git log -1 --pretty=%B)
+        echo "::set-output name=commit::$GITHUB_EVENT_NAME $GITHUB_SHA $MSG"
+      id: commit
 
 # 检出B仓库代码    
     - name: Extract archive 
@@ -52,13 +53,13 @@ jobs:
         rm -rf archive
         ls -a
 
-        
-# 提交并推送变更到B仓库    
+        # 提交并推送变更到B仓库    
     - name: Commit and push
       run: |
         git config user.name bot-k2kra
         git config user.email ark2000@foxmail.com
         git add .
-        git commit -m "Sync archive"
+        git commit -m "${{ steps.commit.outputs.commit }}"
         git push
         echo "git push output: $?"
+  
