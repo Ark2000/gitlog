@@ -24,20 +24,21 @@ jobs:
 # 压缩archive文件夹为zip包    
     - name: Zip archive folder
       run: |
-        zip -r archive.zip ./archive
+        zip -r ../archive.zip ./archive
         
-# 检出B仓库代码    
+  # 检出B仓库代码    
     - name: Extract archive 
       uses: actions/checkout@v2
       with:
         repository: Ark2000/testsync
-        token: ${{ secrets.TOKEN }}  
+        token: ${{ secrets.TOKEN }}
       
 # 解压zip包并覆盖文件    
     - run: |
-        unzip archive.zip
-        cp -r archive/* ./
-        rm -rf archive
+        rm -rf *
+        unzip ../archive.zip
+        cp -r ../archive/* ./
+        rm -rf ../archive
 
         
 # 提交并推送变更到B仓库    
