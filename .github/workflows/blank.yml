@@ -35,7 +35,7 @@ jobs:
       run: |
         SHA=$(git rev-parse --short HEAD)
         MSG=$(git log -1 --pretty=%B)
-        echo "::set-output name=commit::$MSG($GITHUB_SHA)"
+        echo "::set-output name=commit::$MSG ($SHA)"
       id: commit
 
 # 检出B仓库代码    
