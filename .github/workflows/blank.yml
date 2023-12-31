@@ -1,0 +1,65 @@
+# 定义workflow名称 
+name: Sync archive folder
+
+# 在A仓库main分支push代码时触发
+on: 
+  push:
+    branches:
+      - main
+
+# 定义任务    
+jobs:
+
+# 任务名称 
+  build: 
+  
+# 在ubuntu环境下运行   
+    runs-on: ubuntu-latest
+    
+    steps:
+    
+# 检出A仓库代码    
+    - uses: actions/checkout@v2
+
+# 压缩archive文件夹为zip包    
+    - name: Zip archive folder
+      run: |
+        zip -r ../archive.zip ./archive
+  
+# 添加sha标识
+    - name: Create commit hash file
+      run: |
+        echo $GITHUB_SHA > ../COMMIT_SHA
+
+    - name: Get commit info
+      run: |
+        MSG=$(git log -1 --pretty=%B)
+        echo "::set-output name=commit::$MSG (https://github.com/Ark2000/k2kra-blogs/commit/$GITHUB_SHA)"
+      id: commit
+
+# 检出B仓库代码    
+    - name: Extract archive 
+      uses: actions/checkout@v2
+      with:
+        repository: Ark2000/testsync
+        token: ${{ secrets.TOKEN }}
+      
+# 解压zip包并覆盖文件    
+    - run: |
+        rm -rf *
+        unzip ../archive.zip
+        cp -r archive/* ./
+        cp ../COMMIT_SHA ./
+        rm -rf archive
+        ls -a
+
+        # 提交并推送变更到B仓库    
+    - name: Commit and push
+      run: |
+        git config user.name bot-k2kra
+        git config user.email ark2000@foxmail.com
+        git add .
+        git commit -m "SYNC: ${{ steps.commit.outputs.commit }}"
+        git push
+        echo "git push output: $?"
+  
